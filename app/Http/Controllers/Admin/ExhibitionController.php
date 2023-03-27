@@ -80,8 +80,9 @@ class ExhibitionController extends Controller
 
     public function destroy(Exhibition $exhibition): RedirectResponse
     {
-        $path = public_path(Exhibition::UPLOAD_COVER_PATH);
-        $this->uploadFileRepository->removeFile($path, $exhibition->cover_image, true);
+        $this->uploadFileRepository->removeFile(public_path(Exhibition::UPLOAD_COVER_PATH), $exhibition->cover_image);
+        $this->removeArtworkImages($exhibition->images, $exhibition->id);
+        $this->uploadFileRepository->removeFile(public_path(Exhibition::UPLOAD_COVER_PATH), $exhibition->cover_image, true);
         $exhibition->delete();
 
         return to_route('admin.exhibition.index')->with('success', 'Data Updated Successfully !');
@@ -113,11 +114,11 @@ class ExhibitionController extends Controller
         ]);
     }
 
+
     /**
      * Delete Upload images.
-     *
      * @param App\Models\Exhibition $exhibition
-     * @return json
+     * 
      */
     public function removeUpload(Request $request, Exhibition $exhibition): JsonResponse
     {
@@ -129,5 +130,25 @@ class ExhibitionController extends Controller
         return response()->json([
             'success' => $request->file_name
         ]);
+    }
+
+
+    /**
+     * Delete Uploaded images.
+     * @param object $exhibitionImages (Object)
+     * @param int $exhibitionId (Exhibition::id)
+     *
+     */
+    public function removeArtWorkImages(Object $exhibitionImages, int $exhibitionId): void
+    {
+        if ($exhibitionImages->count()) {
+            foreach ($exhibitionImages as $image) {
+                $this->uploadFileRepository->removeFile(
+                    public_path(Exhibition::UPLOAD_PATH . $exhibitionId),
+                    $image->filename,
+                    true
+                );
+            }
+        }
     }
 }
