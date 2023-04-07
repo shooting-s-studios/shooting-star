@@ -16,7 +16,10 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        return view('index', ['pageName' => 'Home',]);
+        return view('index', [
+            'pageName' => 'Home',
+            'artistData' => Artist::where('status', 'active')->limit(12)->get(),
+        ]);
     }
 
     public function about(): View
@@ -39,7 +42,7 @@ class HomeController extends Controller
     {
         return view('artists_detail', [
             'pageName' => $artist->artist_name,
-            'pageData' => $artist,
+            'pageData' => Artist::with('shop')->where('id', $artist->id)->first(),
         ]);
     }
 
@@ -74,7 +77,7 @@ class HomeController extends Controller
 
     public function shop(Request $request): View
     {
-        $shopData = Shop::where('status', 'Active');
+        $shopData = Shop::with('artist')->where('status', 'Active');
 
         if ($request->search) {
             $shopData->where('item_title', 'LIKE', '%'. $request->search .'%');

@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExhibitionController;
+use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\OpenCallController;
 use App\Http\Controllers\Admin\OpenCallFormController;
 use App\Http\Controllers\Admin\OpenCallFormResponse;
@@ -58,15 +59,13 @@ Route::middleware('auth:admin')->prefix(Admin::PATH)->name('admin.')->group(func
     Route::post('exhibition/{exhibition}/doremove', [ExhibitionController::class, 'removeUpload'])->name('exhibition.removeUpload');
 
     Route::resource('artist', ArtistController::class);
-    Route::get('artist/{artist}/gallery', [ArtistController::class, 'gallery'])->name('artist.gallery');
-    Route::post('artist/{artist}/upload', [ArtistController::class, 'upload'])->name('artist.upload');
-    Route::post('artist/{artist}/doremove', [ArtistController::class, 'removeUpload'])->name('artist.removeUpload');
-
     Route::resource('opencall', OpenCallController::class);
     Route::resource('opencall.opencall-form', OpenCallFormController::class);
     Route::resource('shop', ShopController::class);
     Route::resource('subscription', SubscriptionController::class);
     Route::resource('open-call-response', OpenCallFormResponse::class);
+
+    Route::post('export/{exportType}', [ExportController::class, 'index']);
 });
 
 require __DIR__.'/auth.php';
